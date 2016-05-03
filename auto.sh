@@ -1,9 +1,8 @@
-#!/usr/bin/env bash
+
 # Auto checker script for Scilab Textbook Companion
 # http://scilab.in/Textbook_Companion_Project
 
-# Original author: Lavitha Pereira <lavitha89@gmail.com>
-# Contributor: Sachin Patil <isachin@iitb.ac.in>
+# Original author: Lavitha Pereira, Sachin
 
 # This file is part of tbc-auto-checker.
 # tbc-auto-checker is free software: you can redistribute it and/or modify
@@ -21,7 +20,7 @@
 
 
 # Set your scilab path here
-SCI_PATH="${HOME}/Downloads/scilab-5.4.0-beta-2/bin/scilab-adv-cli"
+SCI_PATH="scilab-adv-cli"
 # set where to store graph images
 SCI_GRAPH_PATH="${HOME}/Downloads/tbc_graphs"
 
@@ -49,7 +48,9 @@ function scan_sce_for_errors() {
 
     unzip $1			# unzip file
     wait
-    ZIPFILE=$2			# this is extracted dir name
+    ZIPFILE=$2	
+#find /$ZIPFILE/DEPENDENCIES/ -iname '*.sci' -exec cp {} /PENDING/CH*/EX*/ \;
+
 
     # make a list of all .sce file(with complete path). Exclude
     # scanning 'DEPENDENCIES' DIR
@@ -76,25 +77,52 @@ function scan_sce_for_errors() {
     SCE_FILE_COUNT=$(echo "${SCE_FILE_LIST}" | wc -l)
     echo -e "Total number of .sce files(without counting DEPENDENCIES directory): ${SCE_FILE_COUNT}\n" >> ./output_${ZIPFILE}.log 
 
+    
+
     # make directory for storing graphs(each dir will be named after a book)
     mkdir -p ${SCI_GRAPH_PATH}/${ZIPFILE}
 
     for sce_file in ${SCE_FILE_LIST};
     do
-	CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(]*[)]*|clf\S[0-9]?[d]?[0-9]?[(]*[)]*|plot\S[0-9]?[d]?[0-9]?[(]*[)]*" ${sce_file})
+        
+	#CAT_FILE=$(egrep -r "plot\S[0-9]?[d]?[0-9]?[(]*[)]*" ${sce_file})
+CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(][)]*|clf\S[0-9]?[d]?[0-9]?[(][)]|plot\S[0-9]?[d]?[0-9]?[(][)]|gca\S[0-9]?[d]?[0-9]?[(][)]|gcf\S[0-9]?[d]?[0-9]?[(][)]*|figure|plot|plot2d|plot3d" ${sce_file})
+       
+        
+
         #echo ${CAT_FILE}
 	if [ -z "${CAT_FILE}" ];
 	then
 	    BASE_FILE_NAME=$(basename ${sce_file} .sce)
+                
 	    echo "--------- Text output file --------------"
             echo "------------- ${sce_file}  --------------"
+               
 	    echo "" >> ${sce_file}
+               
 	    echo "exit();" >> ${sce_file} 
 	    sed -i '1s/^/mode(2);/' ${sce_file}
 	    sed -i '1s/^/errcatch(-1,"stop");/' ${sce_file}
 	    sed -i 's/xdel(winsid());//g' ${sce_file}
 	    sed -i 's/clc()//g' ${sce_file}
+	    sed -i 's/clc//g' ${sce_file}
+	    sed -i 's/clc,//g' ${sce_file} 
+	    sed -i 's/clc();//g' ${sce_file} 
 	    sed -i 's/close;//g' ${sce_file}
+	    sed -i 's/close();//g' ${sce_file} 
+	    sed -i 's/close()//g' ${sce_file} 
+        sed -i 's/close//g' ${sce_file}
+        sed -i 's/clear\ all//g' ${sce_file} # Trying to trap all type of clear functions and remove them
+        sed -i 's/clear\ all;//g' ${sce_file} 
+        sed -i 's/clear\ all,//g' ${sce_file} 
+        sed -i 's/clear//g' ${sce_file}
+        sed -i 's/clear()//g' ${sce_file} 
+        sed -i 's/clear();//g' ${sce_file} 
+        sed -i 's/clear(),//g' ${sce_file} 
+        sed -i 's/clf()//g' ${sce_file}
+        sed -i 's/clf();//g' ${sce_file}
+        sed -i 's/clf;//g' ${sce_file}
+		
 	    # run command
             OUTPUT=` timeout 5 ${SCI_PATH} -nb -nwni -f ${sce_file}`
 	    echo $OUTPUT
@@ -112,13 +140,16 @@ function scan_sce_for_errors() {
 	    echo "-------- Graph file -----------"
 	    echo "--------${sce_file}------------"
 	    echo "" >> ${sce_file}
+     
 	    BASE_FILE_NAME=$(basename ${sce_file} .sce)
+                
             # change path for storing graph image file
 	    echo "xinit('${SCI_GRAPH_PATH}/${ZIPFILE}/${BASE_FILE_NAME}');xend();exit();" >> ${sce_file} 
 	    sed -i '1s/^/mode(2);errcatch(-1,"stop");driver("GIF");/' ${sce_file}
 	    sed -i 's/xdel(winsid());//g' ${sce_file}
 	    sed -i 's/clc()//g' ${sce_file}
 	    sed -i 's/close;//g' ${sce_file}	
+            sed -i 's/clf;//g' ${sce_file}
 	    # run command
 	    OUTPUT=`timeout 5 ${SCI_PATH} -nb -nogui -f ${sce_file}`
 	    echo ${OUTPUT}
@@ -156,10 +187,10 @@ function remove_previous_dirs_and_unzip(){
 }
 
 # make a list of .zip files
-if [ ! -z "$(find . -type f -iname '*.zip')" ];
+if [ -e "$(find . -type f -iname *.zip)" ];
 then
     ZIP_FILE_LIST=$(ls -1 *.zip) 
-    for ZIP_FILE in ${ZIP_FILE_LIST};
+    for ZIP_FILE in ${ZIP_FILE_LIST}:
     do
         # loop through the list
 	remove_previous_dirs_and_unzip "${ZIP_FILE}"
@@ -170,7 +201,11 @@ else
     exit 1
 fi
 
-IFS=$SAVEIFS			# restore value of IFS
+
+
+IFS=$SAVEIFS	
+		# restore value of IFS
 
 #----end of auto.sh----#
+
 
