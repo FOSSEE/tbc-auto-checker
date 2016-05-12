@@ -104,24 +104,38 @@ CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(][)]*|clf\S[0-9]?[d]?[0-9]?[(][)
 	    sed -i '1s/^/mode(2);/' ${sce_file}
 	    sed -i '1s/^/errcatch(-1,"stop");/' ${sce_file}
 	    sed -i 's/xdel(winsid());//g' ${sce_file}
-	    sed -i 's/clc()//g' ${sce_file}
-	    sed -i 's/clc//g' ${sce_file}
-	    sed -i 's/clc,//g' ${sce_file} 
-	    sed -i 's/clc();//g' ${sce_file} 
-	    sed -i 's/close;//g' ${sce_file}
-	    sed -i 's/close();//g' ${sce_file} 
-	    sed -i 's/close()//g' ${sce_file} 
-        sed -i 's/close//g' ${sce_file}
-        sed -i 's/clear\ all//g' ${sce_file} # Trying to trap all type of clear functions and remove them
-        sed -i 's/clear\ all;//g' ${sce_file} 
-        sed -i 's/clear\ all,//g' ${sce_file} 
-        sed -i 's/clear//g' ${sce_file}
-        sed -i 's/clear()//g' ${sce_file} 
-        sed -i 's/clear();//g' ${sce_file} 
-        sed -i 's/clear(),//g' ${sce_file} 
-        sed -i 's/clf()//g' ${sce_file}
-        sed -i 's/clf();//g' ${sce_file}
-        sed -i 's/clf;//g' ${sce_file}
+	    sed -i 's/clc()$//g' ${sce_file}
+	    sed -i 's/clc$//g' ${sce_file}
+	    sed -i 's/clc,$//g' ${sce_file} #sri
+	    sed -i 's/clc();$//g' ${sce_file} #sri
+	    sed -i 's/close;$//g' ${sce_file}
+	    sed -i 's/close();$//g' ${sce_file} #sri
+	    sed -i 's/close()$//g' ${sce_file} #sri
+            sed -i 's/close$//g' ${sce_file}
+            sed -i 's/clear\ all$//g' ${sce_file} #sri
+            sed -i 's/clear\ all;$//g' ${sce_file} #sri
+            sed -i 's/clear\ all,$//g' ${sce_file} #sri
+            sed -i 's/clear$//g' ${sce_file}
+            sed -i 's/clear()$//g' ${sce_file} #sri
+            sed -i 's/clear();$//g' ${sce_file} #sri
+            sed -i 's/clear(),$//g' ${sce_file} #sri
+            sed -i 's/clf()$//g' ${sce_file}
+            sed -i 's/clf();$//g' ${sce_file}
+            sed -i 's/clf;$//g' ${sce_file}
+	    sed -i 's/scf([0-9]*)//g' ${sce_file} #lavitha
+            sed -i 's/scf([0-9]*);//g' ${sce_file} #lavitha
+	    sed -i 's/scf([0-9]*);//g' ${sce_file} #lavitha
+	    sed -i 's/gcf([0-9]*)//g' ${sce_file} #lavitha
+            sed -i 's/gcf([0-9]*);//g' ${sce_file} #lavitha
+            sed -i 's/gcf([0-9]*);//g' ${sce_file} #lavitha
+            sed -i 's/gcf()//g' ${sce_file} #lavitha
+            sed -i 's/syms/Syms/g' ${sce_file} #lavitha
+            sed -i 's/SYMS/Syms/g' ${sce_file} #lavitha
+            sed -i 's/sym/Syms/g' ${sce_file} #lavitha
+            sed -i 's/mclose([0-9]*)//g' ${sce_file} #lavitha
+            sed -i 's/mclose([0-9]*);//g' ${sce_file} #lavitha
+            sed -i "s/mclose('all')//g" ${sce_file} #lavitha
+
 		
 	    # run command
             OUTPUT=` timeout 5 ${SCI_PATH} -nb -nwni -f ${sce_file}`
@@ -144,9 +158,9 @@ CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(][)]*|clf\S[0-9]?[d]?[0-9]?[(][)
 	    BASE_FILE_NAME=$(basename ${sce_file} .sce)
                 
             # change path for storing graph image file
-	    echo "xinit('${SCI_GRAPH_PATH}/${ZIPFILE}/${BASE_FILE_NAME}');xend();exit();" >> ${sce_file} 
-	    sed -i '1s/^/mode(2);errcatch(-1,"stop");driver("GIF");/' ${sce_file}
-	    sed -i 's/xdel(winsid());//g' ${sce_file}
+	    echo "xinit('${SCI_GRAPH_PATH}/${ZIPFILE}/${BASE_FILE_NAME}');xend();quit();" >> ${sce_file} 
+	    sed -i '1s/^/mode(2);driver("PNG");lines(0);/' ${sce_file}
+	    #sed -i 's/xdel(winsid());//g' ${sce_file}
 	    sed -i 's/clc()//g' ${sce_file}
 	    sed -i 's/close;//g' ${sce_file}	
             sed -i 's/clf;//g' ${sce_file}
