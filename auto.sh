@@ -158,8 +158,8 @@ CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(][)]*|clf\S[0-9]?[d]?[0-9]?[(][)
 	    BASE_FILE_NAME=$(basename ${sce_file} .sce)
                 
             # change path for storing graph image file
-	    echo "xinit('${SCI_GRAPH_PATH}/${ZIPFILE}/${BASE_FILE_NAME}');xend();quit();" >> ${sce_file} 
-	    sed -i '1s/^/mode(2);driver("PNG");lines(0);/' ${sce_file}
+	    echo "xend();quit();" >> ${sce_file} 
+	    sed -i '1s/^/driver("PNG");mode(2);xinit("");lines(0);/' ${sce_file}
 	    #sed -i 's/xdel(winsid());//g' ${sce_file}
 	    sed -i 's/clc()//g' ${sce_file}
 	    sed -i 's/close;//g' ${sce_file}	
