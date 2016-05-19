@@ -75,7 +75,7 @@ function scan_sce_for_errors() {
 	sed 's/^[[:lower:]]*//g' | \
 	sort -n -t _ -k1 -k2 | cut -d"." -f3-)
     SCE_FILE_COUNT=$(echo "${SCE_FILE_LIST}" | wc -l)
-    echo -e "Total number of .sce files(without counting DEPENDENCIES directory): ${SCE_FILE_COUNT}\n" >> ./output_${ZIPFILE}.log 
+    #echo -e "Total number of .sce files(without counting DEPENDENCIES directory): ${SCE_FILE_COUNT}\n" >> ./output_${ZIPFILE}.log 
 
     
 
@@ -104,49 +104,53 @@ CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(][)]*|clf\S[0-9]?[d]?[0-9]?[(][)
 	    sed -i '1s/^/mode(2);/' ${sce_file}
 	    sed -i '1s/^/errcatch(-1,"stop");/' ${sce_file}
 	    sed -i 's/xdel(winsid());//g' ${sce_file}
-	    sed -i 's/clc()$//g' ${sce_file}
-	    sed -i 's/clc$//g' ${sce_file}
-	    sed -i 's/clc,$//g' ${sce_file} #sri
-	    sed -i 's/clc();$//g' ${sce_file} #sri
-	    sed -i 's/close;$//g' ${sce_file}
-	    sed -i 's/close();$//g' ${sce_file} #sri
-	    sed -i 's/close()$//g' ${sce_file} #sri
-            sed -i 's/close$//g' ${sce_file}
-            sed -i 's/clear\ all$//g' ${sce_file} #sri
-            sed -i 's/clear\ all;$//g' ${sce_file} #sri
-            sed -i 's/clear\ all,$//g' ${sce_file} #sri
-            sed -i 's/clear$//g' ${sce_file}
-            sed -i 's/clear()$//g' ${sce_file} #sri
-            sed -i 's/clear();$//g' ${sce_file} #sri
-            sed -i 's/clear(),$//g' ${sce_file} #sri
-            sed -i 's/clf()$//g' ${sce_file}
-            sed -i 's/clf();$//g' ${sce_file}
-            sed -i 's/clf;$//g' ${sce_file}
-	    sed -i 's/scf([0-9]*)//g' ${sce_file} #lavitha
-            sed -i 's/scf([0-9]*);//g' ${sce_file} #lavitha
-	    sed -i 's/scf([0-9]*);//g' ${sce_file} #lavitha
-	    sed -i 's/gcf([0-9]*)//g' ${sce_file} #lavitha
-            sed -i 's/gcf([0-9]*);//g' ${sce_file} #lavitha
-            sed -i 's/gcf([0-9]*);//g' ${sce_file} #lavitha
-            sed -i 's/gcf()//g' ${sce_file} #lavitha
-            sed -i 's/syms/Syms/g' ${sce_file} #lavitha
-            sed -i 's/SYMS/Syms/g' ${sce_file} #lavitha
-            sed -i 's/sym/Syms/g' ${sce_file} #lavitha
-            sed -i 's/mclose([0-9]*)//g' ${sce_file} #lavitha
-            sed -i 's/mclose([0-9]*);//g' ${sce_file} #lavitha
-            sed -i "s/mclose('all')//g" ${sce_file} #lavitha
+	    sed -i 's/clc()\x0D//g' ${sce_file}
+	    sed -i 's/clc\x0D//g' ${sce_file}
+	    sed -i 's/clc,\x0D//g' ${sce_file} 
+	    sed -i 's/clc();\x0D//g' ${sce_file} 
+	    sed -i 's/clc//g' ${sce_file} 
+	    sed -i 's/close;\x0D//g' ${sce_file}
+	    sed -i 's/close();\x0D//g' ${sce_file} 
+	    sed -i 's/close()\x0D//g' ${sce_file} 
+            sed -i 's/close\x0D//g' ${sce_file}
+	    sed -i 's/close;//g' ${sce_file}
+	    sed -i 's/close ;//g' ${sce_file}
+            sed -i 's/clear\ all\x0D//g' ${sce_file} 
+            sed -i 's/clear\ all;\x0D//g' ${sce_file} 
+            sed -i 's/clear\ all,\x0D//g' ${sce_file} 
+            sed -i 's/clear\x0D//g' ${sce_file}
+            sed -i 's/clear()\x0D//g' ${sce_file} 
+            sed -i 's/clear();\x0D//g' ${sce_file} 
+            sed -i 's/clear(),\x0D//g' ${sce_file} 
+            sed -i 's/clf()\x0D//g' ${sce_file}
+            sed -i 's/clf();\x0D//g' ${sce_file} 
+            sed -i 's/clf;\x0D//g' ${sce_file} 
+            sed -i 's/clf//g' ${sce_file} 
+	    sed -i 's/scf([0-9]*)//g' ${sce_file} 
+            sed -i 's/scf([0-9]*);//g' ${sce_file} 
+	    sed -i 's/scf([0-9]*);//g' ${sce_file} 
+	    sed -i 's/gcf([0-9]*)//g' ${sce_file} 
+            sed -i 's/gcf([0-9]*);//g' ${sce_file} 
+            sed -i 's/gcf([0-9]*);//g' ${sce_file} 
+            sed -i 's/gcf()//g' ${sce_file} 
+            sed -i 's/syms\ /Syms\ /g' ${sce_file} 
+            sed -i 's/SYMS/Syms/g' ${sce_file} 
+            sed -i 's/sym\ /Syms\ /g' ${sce_file} 
+            sed -i 's/mclose([0-9]*)//g' ${sce_file} 
+            sed -i 's/mclose([0-9]*);//g' ${sce_file} 
+            sed -i "s/mclose('all')//g" ${sce_file} 
 
 		
 	    # run command
-            OUTPUT=` timeout 5 ${SCI_PATH} -nb -nwni -f ${sce_file}`
+            OUTPUT=` timeout 10 ${SCI_PATH} -nb -nwni -f ${sce_file}`
 	    echo $OUTPUT
 	    if [[ "${OUTPUT}" =~ "!--error" ]];
             then
-		echo "ERROR: ${sce_file}" >> ./error_${ZIPFILE}.log
-		echo "${OUTPUT}" >> ./error_${ZIPFILE}.log
+		echo "ERROR: ${sce_file}" >> ./error_noplot_${ZIPFILE}.log
+		echo "${OUTPUT}" >> ./error_noplot_${ZIPFILE}.log
 	    else
-		echo "################# ${sce_file} #####################" >> ./output_${ZIPFILE}.log
-		echo "${OUTPUT}" >> ./output_${ZIPFILE}.log
+		echo "################# ${sce_file} #####################" >> ./output_noplot_${ZIPFILE}.log
+		echo "${OUTPUT}" >> ./output_noplot_${ZIPFILE}.log
 	    fi
 	    unset OUTPUT
 	    unset BASE_FILE_NAME
@@ -161,9 +165,16 @@ CAT_FILE=$(egrep -r "subplot\S[0-9]?[d]?[0-9]?[(][)]*|clf\S[0-9]?[d]?[0-9]?[(][)
 	    echo "xend();quit();" >> ${sce_file} 
 	    sed -i '1s/^/driver("PNG");mode(2);xinit("");lines(0);/' ${sce_file}
 	    #sed -i 's/xdel(winsid());//g' ${sce_file}
-	    sed -i 's/clc()//g' ${sce_file}
+	    sed -i 's/clc()\x0D//g' ${sce_file}
+	    sed -i 's/clc\x0D//g' ${sce_file}
+	    sed -i 's/clc,\x0D//g' ${sce_file} 
+	    sed -i 's/clc();\x0D//g' ${sce_file} 
+	    sed -i 's/clc()//g' ${sce_file} 
 	    sed -i 's/close;//g' ${sce_file}	
             sed -i 's/clf;//g' ${sce_file}
+	    sed -i 's/syms\ /Syms\ /g' ${sce_file} 
+            sed -i 's/SYMS/Syms/g' ${sce_file} 
+            sed -i 's/sym\ /Syms\ /g' ${sce_file} 
 	    # run command
 	    OUTPUT=`timeout 5 ${SCI_PATH} -nb -nogui -f ${sce_file}`
 	    echo ${OUTPUT}
@@ -201,9 +212,11 @@ function remove_previous_dirs_and_unzip(){
 }
 
 # make a list of .zip files
-if [ -e "$(find . -type f -iname *.zip)" ];
+#if [ -e "$(find . -type f -iname \*.zip)" ];
+if [ "$(find . -type f -iname \*.zip | wc -l)" -gt 0 ];
 then
     ZIP_FILE_LIST=$(ls -1 *.zip) 
+	echo $ZIP_FILE_LIST
     for ZIP_FILE in ${ZIP_FILE_LIST}:
     do
         # loop through the list
